@@ -173,7 +173,7 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
         var body:NSString="Mail Sharing"
         var email:NSString="\(recipients) \(body)"
         email=email.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
-        UIApplication.sharedApplication().openURL(NSURL(string: email)!)
+        UIApplication.sharedApplication().openURL(NSURL(string: email as String)!)
     }
     func displayComposerSheet()
     {
