@@ -12,8 +12,11 @@ import MessageUI
 
 
 class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageComposeViewControllerDelegate,MFMailComposeViewControllerDelegate,UIAlertViewDelegate {
-                            
+    
+    var objRechability = Reachability.reachabilityForInternetConnection()
+    
     @IBOutlet weak var ivImage: UIImageView!
+    
     override func viewDidLoad()
     {
         super.viewDidLoad()
@@ -23,7 +26,7 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
 
     @IBAction func btnTwitterClicked(sender: AnyObject)
     {
-        if Reachability.isConnectedToNetwork()
+        if objRechability!.isReachable()
         {
             shareTwitter()
         }
@@ -32,9 +35,10 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
             Util .invokeAlertMethod("Warning", strBody: "Internet connection not available.", delegate: self)
         }
     }
+    
     @IBAction func btnFacebookClicked(sender: AnyObject)
     {
-        if Reachability.isConnectedToNetwork()
+        if objRechability!.isReachable()
         {
             shareFacebook()
         }
@@ -43,13 +47,15 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
             Util .invokeAlertMethod("Warning", strBody: "Internet connection not available.", delegate: self)
         }
     }
+    
     @IBAction func btniMessageClicked(sender: AnyObject)
     {
         shareiMessage()
     }
+    
     @IBAction func btnMailClicked(sender: AnyObject)
     {
-        if Reachability.isConnectedToNetwork()
+        if objRechability!.isReachable()
         {
             shareMail()
         }
@@ -67,11 +73,11 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
     
     func shareFacebook()
     {
-        var fvc: SLComposeViewController=SLComposeViewController(forServiceType: SLServiceTypeFacebook)
+        let fvc: SLComposeViewController=SLComposeViewController(forServiceType: SLServiceTypeFacebook)
         fvc.completionHandler =
         {
             result -> Void in
-            var getResult = result as SLComposeViewControllerResult;
+            let getResult = result as SLComposeViewControllerResult;
             switch(getResult.rawValue)
             {
                 case SLComposeViewControllerResult.Cancelled.rawValue:
@@ -91,11 +97,11 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
     
     func shareTwitter()
     {
-        var tvc: SLComposeViewController=SLComposeViewController(forServiceType: SLServiceTypeTwitter)
+        let tvc: SLComposeViewController=SLComposeViewController(forServiceType: SLServiceTypeTwitter)
         tvc.completionHandler =
             {
                 result -> Void in
-                var getResult = result as SLComposeViewControllerResult;
+                let getResult = result as SLComposeViewControllerResult;
                 switch(getResult.rawValue)
                 {
                     case SLComposeViewControllerResult.Cancelled.rawValue:
@@ -115,32 +121,32 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
     
     func shareiMessage()
     {
-        var controller: MFMessageComposeViewController=MFMessageComposeViewController()
+        let controller: MFMessageComposeViewController=MFMessageComposeViewController()
         if(MFMessageComposeViewController .canSendText())
         {
             controller.body="iMessage Sharing !"
-            controller.addAttachmentData(UIImageJPEGRepresentation(UIImage(named: "images.jpg"), 1), typeIdentifier: "image/jpg", filename: "images.jpg")
+            controller.addAttachmentData(UIImageJPEGRepresentation(UIImage(named: "images.jpg")!, 1)!, typeIdentifier: "image/jpg", filename: "images.jpg")
             controller.delegate=self
             controller.messageComposeDelegate=self
             self.presentViewController(controller, animated: true, completion: nil)
         }
         else
         {
-            var alert = UIAlertController(title: "Error", message: "Text messaging is not available", preferredStyle: UIAlertControllerStyle.Alert)
+            let alert = UIAlertController(title: "Error", message: "Text messaging is not available", preferredStyle: UIAlertControllerStyle.Alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.Cancel, handler: nil))
             self.presentViewController(alert, animated: true, completion: nil)
         }
     }
     
-    func messageComposeViewController(controller: MFMessageComposeViewController!, didFinishWithResult result: MessageComposeResult)
+    func messageComposeViewController(controller: MFMessageComposeViewController, didFinishWithResult result: MessageComposeResult)
     {
-        switch result.value
+        switch result.rawValue
         {
-            case MessageComposeResultCancelled.value:
+            case MessageComposeResultCancelled.rawValue:
                 Util .invokeAlertMethod("Warning", strBody: "Message cancelled", delegate: self)
-            case MessageComposeResultFailed.value:
+            case MessageComposeResultFailed.rawValue:
                 Util .invokeAlertMethod("Warning", strBody: "Message failed", delegate: self)
-            case MessageComposeResultSent.value:
+            case MessageComposeResultSent.rawValue:
                 Util .invokeAlertMethod("Success", strBody: "Message sent", delegate: self)
             default:
                 Util .invokeAlertMethod("Warning", strBody: "error", delegate: self)
@@ -150,7 +156,7 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
     
     func shareMail()
     {
-        var mailClass:AnyClass?=NSClassFromString("MFMailComposeViewController")
+        let mailClass:AnyClass?=NSClassFromString("MFMailComposeViewController")
         if(mailClass != nil)
             {
                 if((mailClass?.canSendMail()) != nil)
@@ -169,35 +175,35 @@ class ViewController: UIViewController,UINavigationControllerDelegate,MFMessageC
     }
     func launchMailAppOnDevice()
     {
-        var recipients:NSString="";
-        var body:NSString="Mail Sharing"
+        let recipients:NSString="";
+        let body:NSString="Mail Sharing"
         var email:NSString="\(recipients) \(body)"
         email=email.stringByAddingPercentEscapesUsingEncoding(NSUTF8StringEncoding)!
         UIApplication.sharedApplication().openURL(NSURL(string: email as String)!)
     }
     func displayComposerSheet()
     {
-        var picker: MFMailComposeViewController=MFMailComposeViewController()
+        let picker: MFMailComposeViewController=MFMailComposeViewController()
         picker.mailComposeDelegate=self;
         picker .setSubject("Test")
         picker.setMessageBody("Mail Sharing !", isHTML: true)
-        var data: NSData = UIImagePNGRepresentation(UIImage(named: "images.jpg"))
+        let data: NSData = UIImagePNGRepresentation(UIImage(named: "images.jpg")!)!
         
         picker.addAttachmentData(data, mimeType: "image/png", fileName: "images.png")
         
         self.presentViewController(picker, animated: true, completion: nil)
     }
-    func mailComposeController(controller:MFMailComposeViewController, didFinishWithResult result:MFMailComposeResult, error:NSError)
+    func mailComposeController(controller:MFMailComposeViewController, didFinishWithResult result:MFMailComposeResult, error:NSError?)
     {
-        switch result.value
+        switch result.rawValue
         {
-            case MFMailComposeResultCancelled.value:
+            case MFMailComposeResultCancelled.rawValue:
                 Util .invokeAlertMethod("Warning", strBody: "Mail cancelled", delegate: self)
-            case MFMailComposeResultSaved.value:
+            case MFMailComposeResultSaved.rawValue:
                 Util .invokeAlertMethod("Warning", strBody: "Mail saved", delegate: self)
-            case MFMailComposeResultSent.value:
+            case MFMailComposeResultSent.rawValue:
                 Util .invokeAlertMethod("Success", strBody: "Mail sent", delegate: self)
-            case MFMailComposeResultFailed.value:
+            case MFMailComposeResultFailed.rawValue:
                 Util .invokeAlertMethod("Warning", strBody: "Mail sent failure", delegate: self)
             default:
                 Util .invokeAlertMethod("Warning", strBody: "error", delegate: self)

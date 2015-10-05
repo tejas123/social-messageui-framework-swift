@@ -11,7 +11,7 @@ import UIKit
 class Util: NSObject
 {
     class func invokeAlertMethod(strTitle: String, strBody: String, delegate: AnyObject?) {
-        var alert: UIAlertView = UIAlertView()
+        let alert: UIAlertView = UIAlertView()
         alert.message = strBody
         alert.title = strTitle
         alert.delegate = delegate
